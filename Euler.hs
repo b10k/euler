@@ -1,4 +1,4 @@
-module Euler (factors, divisors, expmod, hypermod) where
+module Euler (factors, divisors, expmod, hypermod, split) where
 
 import Data.Bits (shiftR)
 import Data.List (nub, sort)
@@ -33,4 +33,13 @@ expmod b e m = f b e m 1
 -- Hyperexponentiation mod m -- depends on expmod
 hypermod a 1 m = mod a m
 hypermod a (n+1) m = expmod a (hypermod a n m) m
+
+
+-- List utilties
+
+split :: (Eq a) => [a] -> a -> [[a]]
+split s d = case dropWhile (d ==) s of
+                [] -> []
+                s' -> w : split s'' d
+                      where (w, s'') = break (d ==) s'
 
