@@ -1,7 +1,9 @@
-module Euler (factors, divisors, expmod, hypermod, split) where
+module Euler (fact, factors, prime, divisors, expmod, hypermod, split, combine) where
 
 import Data.Bits (shiftR)
 import Data.List (nub, sort)
+
+fact n = product [1..n]
 
 divides d n = rem n d == 0
 
@@ -16,6 +18,10 @@ factors n | n < 1     = error "Argument not positive"
           | n == 1    = []
           | otherwise = p : factors (div n p)
                         where p = ld n
+
+prime n | n < 1     = False
+        | n == 1    = False
+        | otherwise = ld n == n
 
 
 sublists [] = []
@@ -43,3 +49,5 @@ split s d = case dropWhile (d ==) s of
                 s' -> w : split s'' d
                       where (w, s'') = break (d ==) s'
 
+-- n `combine` r = n! / (r!(n-r)!)
+combine n r = (fact n) `div` ((fact r) * (fact (n-r)))
