@@ -1,7 +1,7 @@
 module Euler where
 
 import Data.Bits (shiftR)
-import Data.List (nub, sort)
+import Data.List (nub, sort, group)
 
 fact n = product [1..n]
 
