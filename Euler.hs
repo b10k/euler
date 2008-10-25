@@ -1,4 +1,4 @@
-module Euler (fact, factors, prime, divisors, expmod, hypermod, split, combine) where
+module Euler where
 
 import Data.Bits (shiftR)
 import Data.List (nub, sort)
@@ -23,7 +23,30 @@ prime n | n < 1     = False
         | n == 1    = False
         | otherwise = ld n == n
 
+-- Big prime factorization
+-- This is still really slow for some reason
+prime1 plist n | n < 2^24   = n `elem` plist
+               | n > (2^48) = prime n
+               | otherwise  = ld' plist n == n
+  where
+    ld' (k:ks) n | k `divides` n = k
+                 | k^2 > n       = n
+                 | otherwise     = ld' ks n
 
+primeList = 
+  do f <- readFile "primes.txt"
+     let p = (map read $ words f) :: [Int]
+     return (2 : 3 : 5 : p)
+
+-- Euler totient function
+-- eulerTotient n = sum $ filter (1==) (map (gcd n) [1..(n-1)])
+
+eulerTotient n = 
+  let f = map (\n -> (head n, length n)) (group $ factors n)
+  in product $ map (\(p,k) -> (p-1) * (p^(k-1))) f
+
+
+-- List manipulation
 sublists [] = []
 sublists (x:xs) = [x] : ((map (x:) (sublists xs)) ++ (sublists xs))
 
@@ -51,3 +74,12 @@ split s d = case dropWhile (d ==) s of
 
 -- n `combine` r = n! / (r!(n-r)!)
 combine n r = (fact n) `div` ((fact r) * (fact (n-r)))
+
+digits n = reverse (d' n)
+  where d' 0 = []
+        d' n = let (x,y) = n `divMod` 10 in y : d' x
+
+undigits a = un 0 a
+  where
+    un m [] = m
+    un m (n:ns) = un ((m * 10) + n) ns
