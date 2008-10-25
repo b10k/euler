@@ -23,6 +23,9 @@ prime n | n < 1     = False
         | n == 1    = False
         | otherwise = ld n == n
 
+-- Gives unique divisors of a number n, including 1 and n
+divisors n = 1 : (sort $ nub $ map product $ sublists (factors n))
+
 -- Big prime factorization
 -- This is still really slow for some reason
 prime1 plist n | n < 2^24   = n `elem` plist
@@ -46,13 +49,6 @@ eulerTotient n =
   in product $ map (\(p,k) -> (p-1) * (p^(k-1))) f
 
 
--- List manipulation
-sublists [] = []
-sublists (x:xs) = [x] : ((map (x:) (sublists xs)) ++ (sublists xs))
-
--- Gives unique divisors of a number n, including 1 and n
-divisors n = 1 : (sort $ nub $ map product $ sublists (factors n))
-
 -- Exponentiation modulo m  -- (b^e mod m)
 expmod b e m = f b e m 1
     where f b e m z | e == 0 = z
@@ -71,6 +67,16 @@ split s d = case dropWhile (d ==) s of
                 [] -> []
                 s' -> w : split s'' d
                       where (w, s'') = break (d ==) s'
+
+-- sublists: Generate all sublists of a list
+sublists [] = []
+sublists (x:xs) = [x] : ((map (x:) (sublists xs)) ++ (sublists xs))
+
+-- takeUpto: Return everything up to and including the first element for which p is true
+takeUpto _ []          =  []
+takeUpto p (x:xs) 
+           | p x       = [x]
+           | otherwise = x : takeUpto p xs
 
 -- n `combine` r = n! / (r!(n-r)!)
 combine n r = (fact n) `div` ((fact r) * (fact (n-r)))
