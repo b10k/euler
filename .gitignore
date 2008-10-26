@@ -1,0 +1,16 @@
+# Files to ignore
+
+# Backup copies
+*~ 
+
+# Swap files
+*.swp
+
+# Generated library files and archives
+*.o
+
+# Haskell intermediate files
+*.hi
+
+# Profiler output
+*.prof
