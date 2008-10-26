@@ -2,29 +2,29 @@ module Euler where
 
 import Data.Bits (shiftR)
 import Data.List (nub, sort, group)
+import ONeillPrimes (primes)
 
 fact n = product [1..n]
 
 divides d n = rem n d == 0
 
 -- Prime factorization
-ld n = ldf 2 n
 
-ldf k n | k `divides` n = k
-        | k^2 > n       = n
-        | otherwise     = ldf (k+1) n
+{-# SPECIALIZE factor :: Int -> [Int] #-}
+{-# SPECIALIZE factor :: Integer -> [Integer] #-}
+factor n = f' n primes
+  where
+    f' n (p:ps) | p*p > n        = [n]
+                | n `mod` p == 0 = p : (f' (div n p) (p:ps))
+                | otherwise      = f' n ps
 
-factors n | n < 1     = error "Argument not positive"
-          | n == 1    = []
-          | otherwise = p : factors (div n p)
-                        where p = ld n
-
-prime n | n < 1     = False
-        | n == 1    = False
-        | otherwise = ld n == n
+{-# SPECIALIZE prime :: Int -> Bool #-}
+{-# SPECIALIZE prime :: Integer -> Bool #-}
+prime n | n <= 1     = False
+        | otherwise  = head (factor n) == n
 
 -- Gives unique divisors of a number n, including 1 and n
-divisors n = 1 : (sort $ nub $ map product $ sublists (factors n))
+divisors n = 1 : (sort $ nub $ map product $ sublists (factor n))
 
 -- Big prime factorization
 -- This is still really slow for some reason
@@ -33,7 +33,7 @@ prime1 plist n | n < 2^24   = n `elem` plist
                | otherwise  = ld' plist n == n
   where
     ld' (k:ks) n | k `divides` n = k
-                 | k^2 > n       = n
+                 | k*k > n       = n
                  | otherwise     = ld' ks n
 
 primeList = 
@@ -44,9 +44,16 @@ primeList =
 -- Euler totient function
 -- eulerTotient n = sum $ filter (1==) (map (gcd n) [1..(n-1)])
 
+{-# SPECIALIZE eulerTotient :: Int -> Int #-}
+{-# SPECIALIZE eulerTotient :: Integer -> Integer #-}
 eulerTotient n = 
-  let f = map (\n -> (head n, length n)) (group $ factors n)
-  in product $ map (\(p,k) -> (p-1) * (p^(k-1))) f
+  product $ map (\(p,k) -> (p-1) * (p^(k-1))) $ f (factor n)
+    where
+      f xx = f' xx []
+      f' [] yy = yy
+      f' (x:xs) []                          = f' xs [(x,1)]
+      f' (x:xs) yy@(y@(p,s):ys) | x == p    = f' xs ((p,s+1):ys)
+                                | otherwise = f' xs ((x,1):yy)
 
 
 -- Exponentiation modulo m  -- (b^e mod m)
@@ -61,6 +68,7 @@ hypermod a (n+1) m = expmod a (hypermod a n m) m
 
 
 -- List utilties
+
 
 split :: (Eq a) => [a] -> a -> [[a]]
 split s d = case dropWhile (d ==) s of
