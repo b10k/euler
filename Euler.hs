@@ -69,6 +69,17 @@ hypermod a (n+1) m = expmod a (hypermod a n m) m
 
 -- List utilties
 
+-- The intersection of two sorted lists. Can handle any combination of infinite
+-- and finite lists.
+intersectSorted as bs = inter as bs
+  where
+    inter [] _ = []
+    inter _ [] = []
+    inter xs@(x:xt) ys@(y:yt) = 
+      case compare x y of
+        LT -> inter xt ys
+        EQ -> x : (inter xt yt)
+        GT -> inter xs yt
 
 split :: (Eq a) => [a] -> a -> [[a]]
 split s d = case dropWhile (d ==) s of
