@@ -1,8 +1,11 @@
 module Euler where
 
 import Data.Bits (shiftR)
-import Data.List (nub, sort, group)
+--import Prelude hiding (map, (++), filter, head, last, tail, init, null, length, (!!), reverse, foldl, foldl1, foldr, foldr1, and, or, any, all, sum, product, concat, concatMap, maximum, minimum, scanl, scanl1, scanr, scanr1, iterate, repeat, replicate, cycle, take, drop, splitAt, takeWhile, dropWhile, span, break, elem, notElem, lookup, zip, zip3, zipWith, zipWith3, unzip, unzip3, lines, words, unlines, unwords)
+--import Data.List.Stream
+import Data.List
 import ONeillPrimes (primes)
+import RabinMiller
 
 fact n = product [1..n]
 
@@ -22,6 +25,10 @@ factor n = f' n primes
 {-# SPECIALIZE prime :: Integer -> Bool #-}
 prime n | n <= 1     = False
         | otherwise  = head (factor n) == n
+
+isPrime n | n < 10^9  = prime n
+          | odd n     = rabin n
+          | otherwise = False
 
 -- Gives unique divisors of a number n, including 1 and n
 divisors n = 1 : (sort $ nub $ map product $ sublists (factor n))
@@ -97,8 +104,8 @@ takeUpto p (x:xs)
            | p x       = [x]
            | otherwise = x : takeUpto p xs
 
--- n `combine` r = n! / (r!(n-r)!)
-combine n r = (fact n) `div` ((fact r) * (fact (n-r)))
+-- n `choose` r = n! / (r!(n-r)!)
+choose n r = (fact n) `div` ((fact r) * (fact (n-r)))
 
 digits n = reverse (d' n)
   where d' 0 = []
@@ -108,3 +115,8 @@ undigits a = un 0 a
   where
     un m [] = m
     un m (n:ns) = un ((m * 10) + n) ns
+
+listpandigitals = permutations [0,1,2,3,4,5,6,7,8,9]
+
+pandigitals n = map undigits $ permutations [1..n]
+

@@ -1,5 +1,8 @@
 module PrimeSieve (primes) where
 
+--import Prelude hiding (map, (++), filter, head, last, tail, init, null, length, (!!), reverse, foldl, foldl1, foldr, foldr1, and, or, any, all, sum, product, concat, concatMap, maximum, minimum, scanl, scanl1, scanr, scanr1, iterate, repeat, replicate, cycle, take, drop, splitAt, takeWhile, dropWhile, span, break, elem, notElem, lookup, zip, zip3, zipWith, zipWith3, unzip, unzip3)
+--import Data.List.Stream
+
 data (Integral a) => Wheel a = Wheel a [a] deriving Show
 
 {-# SPECIALIZE wheels :: [Wheel Int] #-}

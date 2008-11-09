@@ -13,6 +13,14 @@ merge xs@(x:xt) ys@(y:yt) =
 
 lists = map (\x -> [ a % x | a <- [1..x] ]) (reverse [1..1000000])
 
+sortedNub [] = []
+sortedNub [x] = [x]
+sortedNub (x:y:xs) | x == y = sortedNub xs
+                   | otherwise = x : (sortedNub (y:xs))
+
+
+list = map (\n ->((3*n) `div` 7)%n) [1..1000000]
+
 sorted = foldl1' merge lists
 
 -- I need to generate these in order
