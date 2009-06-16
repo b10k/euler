@@ -43,11 +43,6 @@ prime1 plist n | n < 2^24   = n `elem` plist
                  | k*k > n       = n
                  | otherwise     = ld' ks n
 
-primeList = 
-  do f <- readFile "primes.txt"
-     let p = (map read $ words f) :: [Int]
-     return (2 : 3 : 5 : p)
-
 -- Euler totient function
 -- eulerTotient n = sum $ filter (1==) (map (gcd n) [1..(n-1)])
 
@@ -107,9 +102,13 @@ takeUpto p (x:xs)
 -- n `choose` r = n! / (r!(n-r)!)
 choose n r = (fact n) `div` ((fact r) * (fact (n-r)))
 
-digits n = reverse (d' n)
-  where d' 0 = []
-        d' n = let (x,y) = n `divMod` 10 in y : d' x
+{-# SPECIALIZE digits :: Int -> [Int] #-}
+{-# SPECIALIZE digits :: Integer -> [Integer] #-}
+digits n = itod n []
+itod x xs
+  | x < 10 = x : xs
+  | otherwise = case (x `rem` 10) of
+                  y -> itod (x `quot` 10) (y : xs)
 
 undigits a = un 0 a
   where
