@@ -1,8 +1,11 @@
-module P193 where
+module Main where
 
 import ONeillPrimes
+import System (getArgs)
 
+squarefree :: [Integer]
 squarefree = [1, 2, 3, 5] ++ (diff [6, 7 ..] squares) 
+squares :: [Integer]
 squares    = foldr1 f . map g $ (map (^2) primes)
   where 
     f (x:xt) ys = x : (merge xt ys)
@@ -21,3 +24,7 @@ diff xs@(x:xt) ys@(y:yt) =
     LT -> x : (diff xt ys)
     EQ -> diff xt yt
     GT -> diff xs yt
+
+main = do
+  n <- fmap (read . head) getArgs
+  print $ n - (fromIntegral (length $ takeWhile (<n) squares)) - 1
