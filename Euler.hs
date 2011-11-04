@@ -1,3 +1,4 @@
+{-# LANGUAGE NPlusKPatterns #-}
 module Euler where
 
 import Data.Bits (shiftR)
